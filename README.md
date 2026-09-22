@@ -118,10 +118,3 @@ The Angular dev server proxies `/api` requests to `http://localhost:8080` via `p
 | `/admin/reservations` | Admin | Full booking history table |
 
 ---
-
-## Default Credentials (dev seeding)
-
-| Role | Email | Password |
-|---|---|---|
-| Admin | admin@meeting.com | Admin@123 |
-| User | rishabh@gmail.com | password123 |
