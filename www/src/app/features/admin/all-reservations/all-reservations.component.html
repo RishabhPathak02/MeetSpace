@@ -1,0 +1,77 @@
+<div class="page fade-in">
+  <div class="page-header">
+    <h1 class="page-title">All Reservations</h1>
+    <p class="page-subtitle">Admin view · {{ reservations.length }} total bookings</p>
+  </div>
+
+  <!-- Summary chips -->
+  <div class="summary-row">
+    <div class="summary-chip confirmed">✅ {{ confirmedCount }} Confirmed</div>
+    <div class="summary-chip cancelled">🚫 {{ cancelledCount }} Cancelled</div>
+    <div class="summary-chip completed">🏁 {{ completedCount }} Completed</div>
+    <div class="summary-chip expired">⌛ {{ expiredCount }} Expired</div>
+  </div>
+
+  @if (loading) {
+    <div class="loading-center"><div class="spinner"></div></div>
+  } @else if (reservations.length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">📊</div>
+      <h3>No reservations yet</h3>
+      <p>Reservations will appear here as users make bookings.</p>
+    </div>
+  } @else {
+    <div class="table-card">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Room</th>
+            <th>User</th>
+            <th>Date</th>
+            <th>Time Slot</th>
+            <th>Purpose</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of reservations; track r.id) {
+            <tr [class.cancelled-row]="r.status==='CANCELLED'">
+              <td class="text-muted">{{ r.id }}</td>
+              <td>
+                <div class="cell-main">{{ r.roomName }}</div>
+                <div class="cell-sub">{{ r.roomLocation }}</div>
+              </td>
+              <td>
+                <div class="user-cell">
+                  <div class="ua">{{ r.userName[0].toUpperCase() }}</div>
+                  <div>
+                    <div class="cell-main">{{ r.userName }}</div>
+                    <div class="cell-sub">ID: {{ r.userId }}</div>
+                  </div>
+                </div>
+              </td>
+              <td>{{ formatDate(r.startTime) }}</td>
+              <td>
+                <div class="time-range">
+                  {{ formatTime(r.startTime) }}<br>
+                  <span class="text-muted">→</span> {{ formatTime(r.endTime) }}
+                </div>
+              </td>
+              <td>{{ r.purpose || '—' }}</td>
+              <td>
+                <span class="badge"
+                      [class.badge-success]="r.status==='CONFIRMED'"
+                      [class.badge-danger]="r.status==='CANCELLED'"
+                      [class.badge-info]="r.status==='COMPLETED'"
+                      [class.badge-neutral]="r.status==='EXPIRED'">
+                  {{ r.status }}
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

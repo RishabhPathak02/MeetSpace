@@ -1,0 +1,112 @@
+<div class="page fade-in">
+  <div class="page-header">
+    <h1 class="page-title">My Reservations</h1>
+    <p class="page-subtitle">{{ confirmedCount }} upcoming · {{ cancelledCount }} cancelled</p>
+  </div>
+
+  <!-- Filter tabs -->
+  <div class="filter-tabs">
+    <button class="tab" [class.active]="activeTab==='all'"       (click)="activeTab='all'">All ({{ reservations.length }})</button>
+    <button class="tab" [class.active]="activeTab==='confirmed'" (click)="activeTab='confirmed'">Upcoming ({{ confirmedCount }})</button>
+    <button class="tab" [class.active]="activeTab==='completed'" (click)="activeTab='completed'">Completed ({{ completedCount }})</button>
+    <button class="tab" [class.active]="activeTab==='cancelled'" (click)="activeTab='cancelled'">Cancelled ({{ cancelledCount }})</button>
+    <button class="tab" [class.active]="activeTab==='expired'"   (click)="activeTab='expired'">Expired ({{ expiredCount }})</button>
+  </div>
+
+  @if (loading) {
+    <div class="loading-center"><div class="spinner"></div><span>Loading reservations…</span></div>
+  } @else if (filteredReservations.length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">📭</div>
+      <h3>No reservations found</h3>
+      <p>{{ activeTab === 'all' ? "You haven't made any bookings yet." : 'Nothing in this category.' }}</p>
+    </div>
+  } @else {
+    <div class="res-grid">
+      @for (r of filteredReservations; track r.id) {
+        <div class="res-card" [class.cancelled-card]="r.status === 'CANCELLED' || r.status === 'EXPIRED'">
+
+          <!-- Status stripe -->
+          <div class="stripe"
+               [class.stripe-confirmed]="r.status==='CONFIRMED'"
+               [class.stripe-cancelled]="r.status==='CANCELLED'"
+               [class.stripe-completed]="r.status==='COMPLETED'"
+               [class.stripe-expired]="r.status==='EXPIRED'">
+          </div>
+
+          <div class="res-content">
+            <div class="res-top-row">
+              <div>
+                <h3 class="res-room">{{ r.roomName }}</h3>
+                <div class="res-loc">📍 {{ r.roomLocation }}</div>
+              </div>
+              <span class="badge"
+                    [class.badge-success]="r.status==='CONFIRMED'"
+                    [class.badge-danger]="r.status==='CANCELLED'"
+                    [class.badge-primary]="r.status==='COMPLETED'"
+                    [class.badge-secondary]="r.status==='EXPIRED'">
+                {{ r.status }}
+              </span>
+            </div>
+
+            <div class="res-time-block">
+              <div class="time-row">
+                <span class="time-label">Date</span>
+                <span class="time-val">{{ formatDate(r.startTime) }}</span>
+              </div>
+              <div class="time-row">
+                <span class="time-label">Time</span>
+                <span class="time-val">{{ formatTime(r.startTime) }} – {{ formatTime(r.endTime) }}</span>
+              </div>
+              @if (r.purpose) {
+                <div class="time-row">
+                  <span class="time-label">Purpose</span>
+                  <span class="time-val">{{ r.purpose }}</span>
+                </div>
+              }
+              <div class="time-row">
+                <span class="time-label">Booked on</span>
+                <span class="time-val text-muted">{{ formatDate(r.createdAt) }}</span>
+              </div>
+            </div>
+            <div class="transfer">
+                 <button
+                  class="transfer-btn"
+                  title="Transfer booking"
+                  (click)="openTransferDialog(r)">
+                  <span class="btn btn-primary">Transfer</span>
+            </button>
+            </div>
+
+            @if (r.status === 'CONFIRMED') {
+              <div class="res-actions">
+                <button class="btn btn-primary btn-sm" (click)="markAsDone(r)"
+                        [disabled]="completingId === r.id">
+                  @if (completingId === r.id) {
+                    <span class="spinner" style="width:.875rem;height:.875rem;border-width:2px"></span>
+                  }
+                  {{ completingId === r.id ? 'Saving…' : '✅ Mark as Done' }}
+                </button>
+
+                <button class="btn btn-danger btn-sm" (click)="cancel(r)"
+                        [disabled]="cancellingId === r.id">
+                  @if (cancellingId === r.id) {
+                    <span class="spinner" style="width:.875rem;height:.875rem;border-width:2px"></span>
+                  }
+                  {{ cancellingId === r.id ? 'Cancelling…' : '🚫 Cancel' }}
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  @if (successMsg) {
+    <div class="toast">✅ {{ successMsg }}</div>
+  }
+  @if (errorMsg) {
+    <div class="toast toast-error">❌ {{ errorMsg }}</div>
+  }
+</div>

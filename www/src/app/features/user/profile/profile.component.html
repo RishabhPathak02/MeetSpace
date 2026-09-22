@@ -1,0 +1,119 @@
+<div class="page fade-in">
+  <div class="page-header">
+    <h1 class="page-title">My Profile</h1>
+    <p class="page-subtitle">Manage your personal information</p>
+  </div>
+
+  @if (successMessage) {
+    <div class="toast">✅ {{ successMessage }}</div>
+  }
+  @if (errorMessage) {
+    <div class="toast toast-error">⚠️ {{ errorMessage }}</div>
+  }
+
+  <div class="profile-card">
+    <div class="profile-header">
+      <div class="profile-avatar">
+        @if (user()?.profilePicture) {
+          <img [src]="user()?.profilePicture" alt="Profile Picture" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+        } @else {
+          {{ user()?.name?.[0]?.toUpperCase() }}
+        }
+      </div>
+      <div class="profile-title" style="display: flex; flex-direction: column; justify-content: center;">
+        <h2 style="margin: 0; font-size: 1.5rem; color: var(--text-primary);">{{ user()?.name }}</h2>
+        <div class="profile-role badge" [class.badge-success]="user()?.role === 'ADMIN'" [class.badge-info]="user()?.role !== 'ADMIN'" style="margin-top: 0.5rem; width: fit-content; padding: 0.35rem 1rem;">
+          {{ user()?.role }}
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-fields">
+      
+      <!-- Name Field (Inline Editable) -->
+      <div class="field-group">
+        <label class="field-label">Full Name</label>
+        
+        @if (!isEditingName) {
+          <div class="field-value editable" (click)="startEditName()" title="Click to edit">
+            <span>{{ user()?.name }}</span>
+            <span class="edit-icon">✏️</span>
+          </div>
+        } @else {
+          <div class="field-edit-mode fade-in">
+            <input type="text" class="form-control" [(ngModel)]="editNameValue" (keyup.enter)="saveName()" autoFocus>
+            <div style="margin-top: 10px;">
+              <label class="field-label">Profile Picture</label>
+              <input type="file" accept="image/*" class="form-control" (change)="onFileSelected($event)">
+            </div>
+            <div class="edit-actions" style="margin-top: 10px;">
+              <button class="btn btn-primary btn-sm" (click)="saveName()" [disabled]="loading">
+                {{ loading ? 'Saving...' : 'Save' }}
+              </button>
+              <button class="btn btn-outline btn-sm" (click)="cancelEditName()" [disabled]="loading">Cancel</button>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Email Field (Read Only) -->
+      <div class="field-group">
+        <label class="field-label">Email Address</label>
+        <div class="field-value readonly">
+          <span>{{ user()?.email }}</span>
+          <span class="lock-icon" title="Email cannot be changed">🔒</span>
+        </div>
+      </div>
+      
+      <!-- Danger Zone Accordion -->
+      <div class="field-group danger-zone-accordion" style="margin-top: 2rem; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: var(--radius-md); overflow: hidden; background: rgba(239, 68, 68, 0.05);">
+        <div 
+          style="padding: 1.25rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s;"
+          (click)="showDangerZone = !showDangerZone"
+        >
+          <h3 style="color: #ef4444; margin: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+            ⚠️ Danger Zone
+          </h3>
+          <span style="color: #ef4444; font-size: 1rem; transition: transform 0.3s;" [style.transform]="showDangerZone ? 'rotate(180deg)' : 'rotate(0)'">
+            ▼
+          </span>
+        </div>
+        
+        @if (showDangerZone) {
+          <div style="padding: 1.5rem; border-top: 1px solid rgba(239, 68, 68, 0.2);" class="fade-in">
+            <p style="color: var(--text-muted); font-size: 0.875rem; margin-top: 0; margin-bottom: 1rem;">
+              Once you delete your account, there is no going back. Please be certain.
+            </p>
+            @if (!confirmDelete) {
+              <button class="btn btn-danger" style="width: fit-content;" (click)="deleteProfile()" [disabled]="loading">
+                Delete Account
+              </button>
+            } @else {
+              <div style="background: rgba(239, 68, 68, 0.1); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid rgba(239, 68, 68, 0.3);" class="fade-in">
+                <p style="color: #ef4444; font-weight: 600; margin-top: 0; margin-bottom: 0.5rem;">Are you absolutely sure?</p>
+                <p style="color: var(--text-muted); font-size: 0.875rem; margin-top: 0; margin-bottom: 1rem;">Please enter your password to confirm deletion.</p>
+                
+                <input type="password" 
+                       class="form-control" 
+                       style="margin-bottom: 1rem; max-width: 300px;" 
+                       placeholder="Enter your password" 
+                       [(ngModel)]="deletePassword" 
+                       (keyup.enter)="executeDelete()">
+
+                <div style="display: flex; gap: 1rem;">
+                  <button class="btn btn-danger" (click)="executeDelete()" [disabled]="loading || !deletePassword">
+                    {{ loading ? 'Deleting...' : 'Yes, Delete My Account' }}
+                  </button>
+                  <button class="btn btn-secondary" (click)="cancelDelete()" [disabled]="loading">
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+      
+    </div>
+  </div>
+</div>

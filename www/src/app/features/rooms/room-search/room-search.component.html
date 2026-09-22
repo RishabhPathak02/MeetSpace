@@ -1,0 +1,104 @@
+<div class="page fade-in">
+  <div class="page-header">
+    <h1 class="page-title">Find a Room</h1>
+    <p class="page-subtitle">Search available rooms by date, time and capacity</p>
+  </div>
+
+  <!-- Search form -->
+  <div class="search-card" [formGroup]="searchForm">
+    <div class="search-grid">
+      <div class="form-group">
+        <label class="form-label">📅 Date</label>
+        <input class="form-control" type="date" formControlName="date" [min]="today" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">🕐 Start Time</label>
+        <input class="form-control" type="time" formControlName="startTime" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">🕑 End Time</label>
+        <input class="form-control" type="time" formControlName="endTime" [min]="searchForm.value.startTime" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">👥 Min Capacity</label>
+        <input class="form-control" type="number" formControlName="capacity" min="1" max="100" />
+      </div>
+    </div>
+    @if (formError()) {
+      <div class="alert alert-error" style="margin-top:1rem">⚠️ {{ formError() }}</div>
+    }
+    <button class="btn btn-primary btn-lg" style="margin-top:1.25rem;min-width:200px"
+            (click)="search()" [disabled]="searching()">
+      @if (searching()) { <span class="spinner" style="width:1rem;height:1rem;border-width:2px"></span> }
+      {{ searching() ? 'Searching…' : '🔍 Search Rooms' }}
+    </button>
+  </div>
+
+  <!-- Results -->
+  @if (searched()) {
+    <div style="margin-top:2rem" class="fade-in">
+      <h2 class="section-title" style="margin-bottom:1rem">
+        {{ availableRooms().length > 0 ? availableRooms().length + ' rooms available' : 'No rooms available' }}
+      </h2>
+
+      @if (availableRooms().length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon">😔</div>
+          <h3>No rooms available</h3>
+          <p>All rooms are booked for this time slot. Try a different time or reduce capacity.</p>
+        </div>
+      } @else {
+        <div class="grid-2">
+          @for (room of availableRooms(); track room.id) {
+            <div class="result-card" [class.booking]="bookingRoomId() === room.id">
+              <div class="result-header">
+                <div>
+                  <h3 class="result-name">{{ room.name }}</h3>
+                  <div class="result-location">📍 {{ room.location }} · Floor {{ room.floor }}</div>
+                </div>
+                <div class="capacity-badge">
+                  <span class="cap-icon">👥</span>
+                  <span class="cap-num">{{ room.capacity }}</span>
+                </div>
+              </div>
+
+              <!-- Booking form inline -->
+              @if (bookingRoomId() === room.id) {
+                <div class="inline-booking fade-in">
+                  <div class="form-group">
+                    <label class="form-label">Purpose (optional)</label>
+                    <input class="form-control" type="text"
+                           placeholder="e.g. Sprint Planning, Interview…"
+                           [formControl]="bookingPurposeCtrl" />
+                  </div>
+                  <div class="booking-info">
+                    🕐 {{ formatTime(searchForm.value.startTime!) }} – {{ formatTime(searchForm.value.endTime!) }}
+                    &nbsp;·&nbsp; {{ formatDate(searchForm.value.date!) }}
+                  </div>
+                  @if (bookingError()) {
+                    <div class="alert alert-error" style="margin-top:0.5rem">⚠️ {{ bookingError() }}</div>
+                  }
+                  @if (bookingSuccess()) {
+                    <div class="alert alert-success" style="margin-top:0.5rem">✅ {{ bookingSuccess() }}</div>
+                  }
+                  <div class="flex gap-3" style="margin-top:0.75rem">
+                    <button class="btn btn-primary" (click)="confirmBooking(room)" [disabled]="booking()">
+                      @if (booking()) { <span class="spinner" style="width:1rem;height:1rem;border-width:2px"></span> }
+                      Confirm Booking
+                    </button>
+                    <button class="btn btn-secondary" (click)="bookingRoomId.set(null)">Cancel</button>
+                  </div>
+                </div>
+              } @else {
+                <button class="btn btn-success btn-full" (click)="startBooking(room.id)"
+                        style="margin-top:1rem">
+                  ✅ Book This Room
+                </button>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

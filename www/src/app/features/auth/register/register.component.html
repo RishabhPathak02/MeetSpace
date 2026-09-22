@@ -1,0 +1,77 @@
+<div class="auth-shell">
+  <div class="auth-brand">
+    <div class="brand-content">
+      <div class="brand-logo">🏢</div>
+      <h1 class="brand-heading">Join MeetSpace</h1>
+      <p class="brand-sub">Your team's meeting hub</p>
+      <div class="brand-steps">
+        <div class="step" [class.done]="step >= 1"><span class="s-num">1</span><span>Create account</span></div>
+        <div class="step-line"></div>
+        <div class="step" [class.done]="step >= 2"><span class="s-num">2</span><span>Browse rooms</span></div>
+        <div class="step-line"></div>
+        <div class="step" [class.done]="step >= 3"><span class="s-num">3</span><span>Book instantly</span></div>
+      </div>
+    </div>
+    <div class="brand-glow"></div>
+  </div>
+
+  <div class="auth-form-panel">
+    <app-animated-border>
+      <div class="auth-card fade-in" style="background: transparent; border: none; box-shadow: none;">
+        <div class="auth-header">
+        <h2>Create your account</h2>
+        <p>Start booking meeting rooms in seconds</p>
+      </div>
+
+      @if (error)   { <div class="alert alert-error" style="margin-bottom:1rem">⚠️ {{ error }}</div> }
+      @if (success) { <div class="alert alert-success" style="margin-bottom:1rem">✅ {{ success }}</div> }
+
+      <form (ngSubmit)="onRegister()" #f="ngForm">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input class="form-control" type="text" name="name"
+                 placeholder="Rishabh Pathak"
+                 [(ngModel)]="form.name"
+                 (ngModelChange)="error=''"
+                 required />
+        </div>
+        <div class="form-group" style="margin-top:1rem">
+          <label class="form-label">Work Email</label>
+          <input class="form-control" type="email" name="email"
+                 placeholder="rishabh@company.com"
+                 [(ngModel)]="form.email"
+                 (ngModelChange)="error=''"
+                 required />
+        </div>
+        <div class="form-group" style="margin-top:1rem">
+          <label class="form-label">Password</label>
+          <div class="pass-wrap">
+            <input class="form-control" [type]="showPass ? 'text' : 'password'" name="password"
+                   placeholder="Min 8 characters"
+                   [(ngModel)]="form.password"
+                   (ngModelChange)="error=''"
+                   required minlength="8" />
+            <button type="button" class="pass-toggle" (click)="showPass=!showPass">
+              {{ showPass ? '🙈' : '👁️' }}
+            </button>
+          </div>
+          @if (form.password && form.password.length < 8) {
+            <span class="form-error">⚠ At least 8 characters required</span>
+          }
+        </div>
+
+        <button class="btn btn-primary btn-full btn-lg" type="submit"
+                style="margin-top:1.5rem" [disabled]="loading">
+          @if (loading) { <span class="spinner" style="width:1rem;height:1rem;border-width:2px"></span> }
+          {{ loading ? 'Creating account…' : 'Create Account' }}
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        Already have an account?
+        <a routerLink="/login">Sign in →</a>
+      </div>
+      </div>
+    </app-animated-border>
+  </div>
+</div>

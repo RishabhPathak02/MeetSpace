@@ -1,0 +1,46 @@
+<div class="page fade-in">
+  <div class="page-header flex items-center justify-between">
+    <div>
+      <h1 class="page-title">Meeting Rooms</h1>
+      <p class="page-subtitle">{{ rooms.length }} active rooms available</p>
+    </div>
+    <a routerLink="/rooms/search" class="btn btn-primary">🔍 Search Available</a>
+  </div>
+
+  @if (loading) {
+    <div class="loading-center"><div class="spinner"></div><span>Loading rooms…</span></div>
+  } @else if (rooms.length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">🏢</div>
+      <h3>No rooms available</h3>
+      <p>Check back later or contact your admin.</p>
+    </div>
+  } @else {
+    <div class="grid-2">
+      @for (room of rooms; track room.id) {
+        <div class="room-card">
+          <div class="room-header">
+            <div class="room-icon">🏢</div>
+            <span class="badge badge-success">ACTIVE</span>
+          </div>
+          <h3 class="room-name">{{ room.name }}</h3>
+          <div class="room-meta">
+            <div class="meta-item"><span class="mi">📍</span> {{ room.location }}</div>
+            <div class="meta-item"><span class="mi">🏗️</span> Floor {{ room.floor }}</div>
+            <div class="meta-item"><span class="mi">👥</span> {{ room.capacity }} people</div>
+          </div>
+          <div class="room-footer">
+            <div class="capacity-bar">
+              <div class="capacity-label">Capacity</div>
+              <div class="capacity-track">
+                <div class="capacity-fill" [style.width.%]="capacityPercent(room.capacity)"></div>
+              </div>
+              <div class="capacity-num">{{ room.capacity }}</div>
+            </div>
+            <a routerLink="/rooms/search" class="btn btn-primary btn-sm">Book Now</a>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

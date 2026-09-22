@@ -1,0 +1,146 @@
+<div class="page fade-in">
+
+  <!-- Hero greeting -->
+  <app-animated-border>
+  <div class="hero-section" style="border: none; margin-bottom: 0;">
+    <div class="hero-text">
+      <div class="greeting-chip">
+        <span>{{ timeGreeting }}</span>
+      </div>
+      <h1 class="hero-title">{{ authService.currentUser()?.name }} 👋</h1>
+      <p class="hero-subtitle">Here's your workspace overview for today.</p>
+    </div>
+    <a routerLink="/rooms/search" class="btn btn-primary btn-lg hero-cta">
+      🔍 Book a Room
+    </a>
+  </div>
+  </app-animated-border>
+
+  <!-- Stats row -->
+  <div class="grid-stats" style="margin-bottom: 2rem">
+    <div class="stat-card">
+      <div class="stat-icon" style="background: rgba(99,102,241,0.15); color: var(--primary-light)">🏢</div>
+      <div>
+        <div class="stat-value">{{ activeRooms }}</div>
+        <div class="stat-label">Active Rooms</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background: rgba(16,185,129,0.15); color: #34d399">📅</div>
+      <div>
+        <div class="stat-value">{{ confirmedCount }}</div>
+        <div class="stat-label">Upcoming Bookings</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background: rgba(239,68,68,0.15); color: #f87171">🚫</div>
+      <div>
+        <div class="stat-value">{{ cancelledCount }}</div>
+        <div class="stat-label">Cancelled</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background: rgba(245,158,11,0.15); color: #fbbf24">⏱️</div>
+      <div>
+        <div class="stat-value">{{ totalCount }}</div>
+        <div class="stat-label">Total Bookings</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Two column layout -->
+  <div class="dash-grid">
+
+    <!-- Upcoming reservations -->
+    <section>
+      <div class="section-header">
+        <h2 class="section-title">Upcoming Reservations</h2>
+        <a routerLink="/reservations" class="see-all">See all →</a>
+      </div>
+
+      @if (loading) {
+        <div class="loading-center"><div class="spinner"></div></div>
+      } @else if (upcomingReservations.length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon">📭</div>
+          <h3>No upcoming bookings</h3>
+          <p>You haven't booked any meeting rooms yet.</p>
+          <a routerLink="/rooms/search" class="btn btn-primary" style="margin-top:1rem">Book a Room</a>
+        </div>
+      } @else {
+        <div class="reservation-list">
+          @for (r of upcomingReservations; track r.id) {
+            <div class="res-card">
+              <div class="res-card-accent"></div>
+              <div class="res-body">
+                <div class="res-top">
+                  <span class="room-name">{{ r.roomName }}</span>
+                  <span class="badge badge-success">CONFIRMED</span>
+                </div>
+                <div class="res-time">
+                  🕐 {{ formatDate(r.startTime) }} · {{ formatTime(r.startTime) }}–{{ formatTime(r.endTime) }}
+                </div>
+                <div class="res-location">📍 {{ r.roomLocation }}</div>
+                @if (r.purpose) {
+                  <div class="res-purpose">💬 {{ r.purpose }}</div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+    <!-- Quick actions -->
+    <section>
+      <h2 class="section-title" style="margin-bottom:1rem">Quick Actions</h2>
+      <div class="quick-actions">
+        <a routerLink="/rooms/search" class="qa-card">
+          <div class="qa-icon">🔍</div>
+          <div>
+            <div class="qa-title">Find a Room</div>
+            <div class="qa-sub">Search by date, time &amp; capacity</div>
+          </div>
+        </a>
+        <a routerLink="/rooms" class="qa-card">
+          <div class="qa-icon">🏢</div>
+          <div>
+            <div class="qa-title">Browse Rooms</div>
+            <div class="qa-sub">View all available rooms</div>
+          </div>
+        </a>
+        <a routerLink="/reservations" class="qa-card">
+          <div class="qa-icon">📋</div>
+          <div>
+            <div class="qa-title">My Bookings</div>
+            <div class="qa-sub">View &amp; cancel reservations</div>
+          </div>
+        </a>
+        @if (authService.isAdmin()) {
+          <a routerLink="/admin/rooms" class="qa-card admin-qa">
+            <div class="qa-icon">⚙️</div>
+            <div>
+              <div class="qa-title">Manage Rooms</div>
+              <div class="qa-sub">Admin · Create, edit, deactivate</div>
+            </div>
+          </a>
+          <a routerLink="/admin/reservations" class="qa-card admin-qa">
+            <div class="qa-icon">📊</div>
+            <div>
+              <div class="qa-title">All Reservations</div>
+              <div class="qa-sub">Admin · Full booking history</div>
+            </div>
+          </a>
+          <a routerLink="/admin/users" class="qa-card admin-qa">
+            <div class="qa-icon">👥</div>
+            <div>
+              <div class="qa-title">Manage Users</div>
+              <div class="qa-sub">Admin · Create admins & view users</div>
+            </div>
+          </a>
+        }
+      </div>
+    </section>
+
+  </div>
+</div>

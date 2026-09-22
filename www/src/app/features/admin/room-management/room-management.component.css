@@ -1,0 +1,39 @@
+.form-card {
+  background: var(--bg-card); border: 1px solid rgba(99,102,241,0.3);
+  border-radius: var(--radius-xl); padding: 1.75rem; margin-bottom: 2rem;
+  box-shadow: var(--shadow-glow);
+}
+.form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+.table-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-xl); overflow: hidden;
+}
+.admin-table { width: 100%; border-collapse: collapse; }
+.admin-table th {
+  padding: 0.875rem 1rem; text-align: left;
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em;
+  color: var(--text-muted); background: var(--bg-surface);
+  border-bottom: 1px solid var(--border); text-transform: uppercase;
+}
+.admin-table td {
+  padding: 1rem; border-bottom: 1px solid var(--border);
+  font-size: 0.9rem; vertical-align: middle;
+}
+.admin-table tr:last-child td { border-bottom: none; }
+.admin-table tr:hover td { background: var(--bg-glass); }
+.inactive-row { opacity: 0.5; }
+.cap-pill {
+  display: inline-flex; align-items: center; gap: 0.25rem;
+  padding: 0.25rem 0.625rem; background: rgba(99,102,241,0.1);
+  border-radius: var(--radius-full); font-size: 0.8125rem; font-weight: 600;
+  color: var(--primary-light);
+}
+.action-btns { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.toast {
+  position: fixed; bottom: 2rem; right: 2rem; z-index: 999;
+  background: rgba(16,185,129,0.9); color: white;
+  padding: 0.875rem 1.5rem; border-radius: var(--radius-lg);
+  font-weight: 600; animation: fadeIn 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+@media (max-width: 768px) { .admin-table { display: block; overflow-x: auto; } }
